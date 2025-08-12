@@ -5,6 +5,8 @@ import unlinkFile from '../../../shared/unlinkFile';
 import { IsActive, IUser } from './user.interface';
 import { User } from './user.model';
 import { USER_ROLES } from '../../../enums/user';
+import { Request } from 'express';
+import { sendDataToUser } from '../../../helpers/socketManager';
 
 const getUserProfileFromDB = async (
   user: JwtPayload
@@ -40,20 +42,24 @@ const updateProfileToDB = async (
   return updateDoc;
 };
 
-const approveUserToDB = async (userId: string) => {
-  return User.findByIdAndUpdate(
+const approveUserToDB = async (req: Request, userId: string) => {
+  const user = User.findByIdAndUpdate(
     userId,
     { role: USER_ROLES.AGENT },
     { new: true }
   );
+  sendDataToUser(req.user.id, 'approve-user-notify', user);
+  return user;
 };
 
-const suspendUserToDB = async (userId: string) => {
-  return User.findByIdAndUpdate(
+const suspendUserToDB = async (req: Request, userId: string) => {
+  const user = User.findByIdAndUpdate(
     userId,
     { isActive: IsActive.SUSPENDED },
     { new: true }
   );
+  sendDataToUser(req.user.id, 'suspend-user-notify', user);
+  return user;
 };
 
 export const UserService = {
