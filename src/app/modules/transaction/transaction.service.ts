@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import ApiError from '../../../errors/ApiError';
+import { sendDataToUser } from '../../../helpers/socketManager';
 import { User } from '../user/user.model';
 import { Wallet } from '../wallets/wallets.model';
 import {
@@ -36,6 +37,8 @@ const addMoneyToDB = async (payload: ITransaction, req: Request) => {
     status: PayStatus.COMPLETED,
   });
 
+  sendDataToUser(req.user.id, 'add-money-notify', transactions);
+
   await userWallet.save();
 
   return transactions;
@@ -68,6 +71,8 @@ const withdrawMoneyToDB = async (payload: ITransaction, req: Request) => {
   });
 
   await userWallet.save();
+
+  sendDataToUser(req.user.id, 'withdraw-notify', transactions);
 
   return transactions;
 };
@@ -108,6 +113,7 @@ const sendMoneyToDB = async (payload: ITransaction, req: Request) => {
     status: PayStatus.COMPLETED,
   });
 
+  sendDataToUser(req.user.id, 'send-money-notify', transaction);
   return transaction;
 };
 
@@ -150,13 +156,16 @@ const cashInToDB = async (payload: ITransaction, req: Request) => {
 
   await Promise.all([senderWallet.save(), receiverWallet.save()]);
 
-  return Transaction.create({
+  const transactions = Transaction.create({
     type: PayType.CASH_IN,
     amount: payload.amount,
     wallet: senderWallet._id,
     initiatedBy: InitiatedBy.AGENT,
     status: PayStatus.COMPLETED,
   });
+
+  sendDataToUser(req.user.id, 'cash-in-notify', transactions);
+  return transactions;
 };
 
 const cashOutToDB = async (payload: ITransaction, req: Request) => {
@@ -184,13 +193,16 @@ const cashOutToDB = async (payload: ITransaction, req: Request) => {
 
   await Promise.all([senderWallet.save(), receiverWallet.save()]);
 
-  return Transaction.create({
+  const transactions = Transaction.create({
     type: PayType.CASH_IN,
     amount: payload.amount,
     wallet: senderWallet._id,
     initiatedBy: InitiatedBy.AGENT,
     status: PayStatus.COMPLETED,
   });
+
+  sendDataToUser(req.user.id, 'cash-out-notify', transactions);
+  return transactions;
 };
 
 export const TransactionService = {
