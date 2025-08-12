@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import colors from 'colors';
 import { Server, Socket } from 'socket.io';
-import { Wallet } from '../app/modules/wallets/wallets.model';
 import { logger } from '../shared/logger';
+import { handleWalletSocketAction } from './socketActions';
 
 type AuthenticatedSocket = Socket & {
-  user?: { id: string; role: string };
+  user?: { id: string; role: string; socket: string };
 };
 
 const socket = (io: Server) => {
@@ -13,35 +12,16 @@ const socket = (io: Server) => {
     logger.info(colors.blue('A user connected'));
     const userSid = socket.id;
 
-    const handleWalletAction = async (
-      action: string,
-      notifyEvent: string,
-      data: any
-    ) => {
-      try {
-        socket.user = { id: data.userId, role: data.role };
-
-        const wallet = await Wallet.findById(socket.user?.id);
-        if (!wallet) {
-          return socket.emit('error', { message: 'Wallet not found' });
-        }
-        if (wallet.isBlocked) {
-          return socket.emit('error', { message: 'This wallet is blocked' });
-        }
-
-        socket.emit(notifyEvent, { userSid, ...data });
-      } catch (err) {
-        logger.error(err);
-        socket.emit('error', { message: 'Internal server error' });
-      }
-    };
-
     socket.on('add-money', data =>
-      handleWalletAction('add-money', 'add-money-notify', data)
+      handleWalletSocketAction(socket, userSid, 'add-money-notify', data)
     );
 
     socket.on('withdraw', data =>
-      handleWalletAction('withdraw', 'withdraw-notify', data)
+      handleWalletSocketAction(socket, userSid, 'withdraw-notify', data)
+    );
+
+    socket.on('send-money', data =>
+      handleWalletSocketAction(socket, userSid, 'send-money-notify', data)
     );
 
     socket.on('disconnect', () => {
