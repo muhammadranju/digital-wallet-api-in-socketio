@@ -8,8 +8,8 @@ import { Server } from 'socket.io';
 import app from './app';
 import config from './config';
 import { seedSuperAdmin } from './DB/seedAdmin';
-import { socketHelper } from './helpers/socketHelper';
 import { errorLogger, logger } from './shared/logger';
+import { initSocket } from './helpers/socketManager';
 
 //uncaught exception
 process.on('uncaughtException', error => {
@@ -41,7 +41,8 @@ async function main() {
         origin: '*',
       },
     });
-    socketHelper.socket(io);
+    // socketHelper.socket(io);
+    initSocket(server);
     //@ts-ignore
     global.io = io;
   } catch (error) {
