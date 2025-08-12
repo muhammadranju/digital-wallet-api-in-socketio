@@ -1,9 +1,13 @@
-import { ITransaction } from './transaction.interface';
 import { Request } from 'express';
 import ApiError from '../../../errors/ApiError';
 import { User } from '../user/user.model';
 import { Wallet } from '../wallets/wallets.model';
-import { InitiatedBy, PayStatus, PayType } from './transaction.interface';
+import {
+  InitiatedBy,
+  ITransaction,
+  PayStatus,
+  PayType,
+} from './transaction.interface';
 import { Transaction } from './transaction.model';
 
 const addMoneyToDB = async (payload: ITransaction, req: Request) => {
