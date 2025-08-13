@@ -28,7 +28,7 @@ const getMyWallet = catchAsync(async (req: Request, res: Response) => {
 
 const blockUser = catchAsync(async (req: Request, res: Response) => {
   const walletId = req.params.id;
-  const result = await WalletsService.blockUserToDB(walletId);
+  const result = await WalletsService.blockUserToDB(req,walletId);
 
   sendResponse(res, {
     success: true,
@@ -40,7 +40,7 @@ const blockUser = catchAsync(async (req: Request, res: Response) => {
 const unBlockUser = catchAsync(async (req: Request, res: Response) => {
   const walletId = req.params.id;
 
-  const result = await WalletsService.unBlockUserToDB(walletId);
+  const result = await WalletsService.unBlockUserToDB(req,walletId);
 
   sendResponse(res, {
     success: true,
