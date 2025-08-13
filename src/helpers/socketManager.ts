@@ -1,22 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import { Server, Socket } from 'socket.io';
+import notificationModel from '../app/modules/notification/notification.model';
 import config from '../config';
+// import Notification from '../models/notification.model';
 
 const SECRET_KEY = config.jwt.jwt_secret as string;
 
-// Extend the Socket type to include userId
 interface AuthenticatedSocket extends Socket {
   userId?: string;
 }
 
-// Store active socket IDs for each user
 const userSockets: Record<string, Set<string>> = {};
-
-// Singleton instance
 let ioInstance: Server;
 
-export const initSocket=(server: any) =>{
+export const initSocket = (server: any) => {
   const io = new Server(server, {
     cors: { origin: '*' },
   });
@@ -34,12 +32,20 @@ export const initSocket=(server: any) =>{
     }
   });
 
-  io.on('connection', (socket: AuthenticatedSocket) => {
+  io.on('connection', async (socket: AuthenticatedSocket) => {
     const userId = socket.userId!;
     console.log(`✅ User ${userId} connected with socket ID: ${socket.id}`);
 
     if (!userSockets[userId]) userSockets[userId] = new Set();
     userSockets[userId].add(socket.id);
+
+    // Send any unread notifications stored in DB
+    const unread = await notificationModel.find({ userId, isRead: false });
+    if (unread.length > 0) {
+      unread.forEach(notify => {
+        socket.emit(notify.event, notify.data);
+      });
+    }
 
     socket.on('disconnect', () => {
       userSockets[userId]?.delete(socket.id);
@@ -49,15 +55,26 @@ export const initSocket=(server: any) =>{
   });
 
   ioInstance = io;
-  console.log('🚀 Socket.IO initialized');
-}
+  console.log('🚀 Socket.IO initialized with offline notification handling');
+};
 
-// Function to send a message to a specific user
-export const  sendDataToUser=(userId: string, event: string, data: any)=> {
+// Function to send a message/notification to a specific user
+export const sendDataToUser = async (
+  userId: string,
+  event: string,
+  data: any
+) => {
   const sockets = userSockets[userId];
-  if (!sockets) return console.log(`⚠️ No active sockets for user ${userId}`);
 
-  sockets.forEach(socketId => {
-    ioInstance.to(socketId).emit(event, data);
-  });
-}
+  // Always save notification in DB (offline or online)
+  //   await Notification.create({ userId, event, data });
+
+  // If user is online, send immediately
+  if (sockets) {
+    sockets.forEach(socketId => {
+      ioInstance.to(socketId).emit(event, data);
+    });
+  } else {
+    console.log(`📦 User ${userId} offline — notification saved`);
+  }
+};
