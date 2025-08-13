@@ -8,8 +8,8 @@ import { Server } from 'socket.io';
 import app from './app';
 import config from './config';
 import { seedSuperAdmin } from './DB/seedAdmin';
-import { errorLogger, logger } from './shared/logger';
 import { initSocket } from './helpers/socketManager';
+import { errorLogger, logger } from './shared/logger';
 
 //uncaught exception
 process.on('uncaughtException', error => {
