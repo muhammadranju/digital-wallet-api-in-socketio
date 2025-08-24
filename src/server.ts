@@ -9,6 +9,8 @@ import config from './config';
 import { seedSuperAdmin } from './DB/seedAdmin';
 import { errorLogger, logger } from './shared/logger';
 import { getServerIPs } from './util/getServerIPs';
+import dotenv from 'dotenv';
+dotenv.config();
 
 //uncaught exception
 process.on('uncaughtException', error => {
@@ -27,7 +29,7 @@ async function main() {
     const port =
       typeof config.port === 'number' ? config.port : Number(config.port);
 
-    server = app.listen(port, () => {
+    server = app.listen(port, config.ip_address as string, () => {
       logger.info(
         colors.yellow(
           `♻️  Application listening on http://${getServerIPs()}:${config.port}`
