@@ -40,7 +40,7 @@ const updateProfile = catchAsync(async (req: Request, res: Response) => {
 const approveUser = catchAsync(async (req: Request, res: Response) => {
   const userId = req.params.id;
 
-  const result = await UserService.approveUserToDB(userId);
+  const result = await UserService.approveUserToDB(req, userId);
 
   sendResponse(res, {
     success: true,
@@ -52,7 +52,7 @@ const approveUser = catchAsync(async (req: Request, res: Response) => {
 const suspendUser = catchAsync(async (req: Request, res: Response) => {
   const userId = req.params.id;
 
-  const result = await UserService.suspendUserToDB(userId);
+  const result = await UserService.suspendUserToDB(req, userId);
 
   sendResponse(res, {
     success: true,
