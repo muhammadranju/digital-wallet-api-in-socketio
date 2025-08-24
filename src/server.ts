@@ -10,8 +10,6 @@ import { seedSuperAdmin } from './DB/seedAdmin';
 import { errorLogger, logger } from './shared/logger';
 import { getServerIPs } from './util/getServerIPs';
 
-
-
 //uncaught exception
 process.on('uncaughtException', error => {
   errorLogger.error('UnhandledException Detected', error);
@@ -29,7 +27,7 @@ async function main() {
     const port =
       typeof config.port === 'number' ? config.port : Number(config.port);
 
-    server = app.listen(port, config.ip_address as string, () => {
+    server = app.listen(port, () => {
       logger.info(
         colors.yellow(
           `♻️  Application listening on http://${getServerIPs()}:${config.port}`
