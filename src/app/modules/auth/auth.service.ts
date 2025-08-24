@@ -15,16 +15,15 @@ import {
 import cryptoToken from '../../../util/cryptoToken';
 import generateOTP from '../../../util/generateOTP';
 import { ResetToken } from '../resetToken/resetToken.model';
-import { User } from '../user/user.model';
-import { USER_ROLES } from '../../../enums/user';
 import { IUser } from '../user/user.interface';
+import { User } from '../user/user.model';
 import { Wallet } from '../wallets/wallets.model';
 
 // create user
 
 const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
   //set role
-  payload.role = USER_ROLES.USER;
+  // payload.role = USER_ROLES.USER;
   const createUser = await User.create(payload);
   if (!createUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create user');
@@ -100,7 +99,17 @@ const loginUserFromDB = async (payload: ILoginData) => {
     config.jwt.jwt_expire_in as SignOptions['expiresIn']
   );
 
-  return { createToken };
+  const payloadData = {
+    id: isExistUser._id,
+    role: isExistUser.role,
+    email: isExistUser.email,
+    name: isExistUser.name,
+    contact: isExistUser.contact,
+    location: isExistUser.location,
+    token: createToken,
+  };
+
+  return payloadData;
 };
 
 //forget password

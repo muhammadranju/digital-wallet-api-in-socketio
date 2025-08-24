@@ -55,7 +55,7 @@ export const initSocket = (server: any) => {
   });
 
   ioInstance = io;
-  console.log('🚀 Socket.IO initialized with offline notification handling');
+  //? console.log('🚀 Socket.IO initialized with offline notification handling');
 };
 
 // Function to send a message/notification to a specific user

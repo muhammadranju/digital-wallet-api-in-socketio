@@ -4,12 +4,13 @@
 /* eslint-disable no-console */
 import colors from 'colors';
 import mongoose from 'mongoose';
-import { Server } from 'socket.io';
 import app from './app';
 import config from './config';
 import { seedSuperAdmin } from './DB/seedAdmin';
-import { initSocket } from './helpers/socketManager';
 import { errorLogger, logger } from './shared/logger';
+import { getServerIPs } from './util/getServerIPs';
+
+
 
 //uncaught exception
 process.on('uncaughtException', error => {
@@ -30,21 +31,23 @@ async function main() {
 
     server = app.listen(port, config.ip_address as string, () => {
       logger.info(
-        colors.yellow(`♻️  Application listening on port:${config.port}`)
+        colors.yellow(
+          `♻️  Application listening on http://${getServerIPs()}:${config.port}`
+        )
       );
     });
 
     //socket
-    const io = new Server(server, {
-      pingTimeout: 60000,
-      cors: {
-        origin: '*',
-      },
-    });
-    // socketHelper.socket(io);
-    initSocket(server);
-    //@ts-ignore
-    global.io = io;
+    // const io = new Server(server, {
+    //   pingTimeout: 60000,
+    //   cors: {
+    //     origin: '*',
+    //   },
+    // });
+    // // socketHelper.socket(io);
+    // initSocket(server);
+    // //@ts-ignore
+    // global.io = io;
   } catch (error) {
     console.log(error);
     errorLogger.error(colors.red('🤢 Failed to connect Database'));
