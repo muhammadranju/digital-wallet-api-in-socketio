@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { sendDataToUser } from '../../../helpers/socketManager';
+// import { sendDataToUser } from '../../../helpers/socketManager';
 import { IWallet } from './wallets.interface';
 import { Wallet } from './wallets.model';
 
@@ -18,7 +18,7 @@ const blockUserToDB = async (req: Request, walletId: string) => {
     { new: true }
   );
 
-  sendDataToUser(req.user.id, 'block-user-notify', wallet);
+  // sendDataToUser(req.user.id, 'block-user-notify', wallet);
   return wallet;
 };
 const unBlockUserToDB = async (req: Request, walletId: string) => {
@@ -27,7 +27,7 @@ const unBlockUserToDB = async (req: Request, walletId: string) => {
     { isBlocked: false },
     { new: true }
   );
-  sendDataToUser(req.user.id, 'unblock-user-notify', wallet);
+  // sendDataToUser(req.user.id, 'unblock-user-notify', wallet);
 
   return wallet;
 };
