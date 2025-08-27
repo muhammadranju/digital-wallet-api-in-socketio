@@ -62,9 +62,32 @@ const suspendUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAgents = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.getAgentsToDB();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Get Agents successfully',
+    data: result,
+  });
+});
+const getUsers = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.getUsersToDB();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Get User successfully',
+    data: result,
+  });
+});
+
 export const UserController = {
   getUserProfile,
   updateProfile,
+  getAgents,
   approveUser,
   suspendUser,
+  getUsers,
 };

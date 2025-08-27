@@ -6,7 +6,7 @@ import { IsActive, IUser } from './user.interface';
 import { User } from './user.model';
 import { USER_ROLES } from '../../../enums/user';
 import { Request } from 'express';
-import { sendDataToUser } from '../../../helpers/socketManager';
+// import { sendDataToUser } from '../../../helpers/socketManager';
 
 const getUserProfileFromDB = async (
   user: JwtPayload
@@ -45,10 +45,10 @@ const updateProfileToDB = async (
 const approveUserToDB = async (req: Request, userId: string) => {
   const user = User.findByIdAndUpdate(
     userId,
-    { role: USER_ROLES.AGENT },
+    { isActive: IsActive.ACTIVE },
     { new: true }
   );
-  sendDataToUser(req.user.id, 'approve-user-notify', user);
+  // sendDataToUser(req.user.id, 'approve-user-notify', user);
   return user;
 };
 
@@ -58,8 +58,22 @@ const suspendUserToDB = async (req: Request, userId: string) => {
     { isActive: IsActive.SUSPENDED },
     { new: true }
   );
-  sendDataToUser(req.user.id, 'suspend-user-notify', user);
+  // sendDataToUser(req.user.id, 'suspend-user-notify', user);
   return user;
+};
+
+const getAgentsToDB = async () => {
+  const agents = await User.find({ role: USER_ROLES.AGENT }).select(
+    'id name email contact role isActive status verified createdAt image'
+  );
+  return agents;
+};
+
+const getUsersToDB = async () => {
+  const users = await User.find({ role: USER_ROLES.USER }).select(
+    'id name email contact role isActive status verified createdAt image'
+  );
+  return users;
 };
 
 export const UserService = {
@@ -67,4 +81,6 @@ export const UserService = {
   updateProfileToDB,
   approveUserToDB,
   suspendUserToDB,
+  getAgentsToDB,
+  getUsersToDB,
 };

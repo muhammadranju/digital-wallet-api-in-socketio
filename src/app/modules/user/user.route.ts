@@ -8,9 +8,12 @@ const router = express.Router();
 
 router
   .route('/profile')
-  .get(auth(USER_ROLES.ADMIN, USER_ROLES.USER), UserController.getUserProfile)
+  .get(
+    auth(USER_ROLES.ADMIN, USER_ROLES.AGENT, USER_ROLES.USER),
+    UserController.getUserProfile
+  )
   .patch(
-    auth(USER_ROLES.ADMIN, USER_ROLES.ADMIN, USER_ROLES.USER),
+    auth(USER_ROLES.ADMIN, USER_ROLES.AGENT, USER_ROLES.USER),
     fileUploadHandler(),
     (req: Request, res: Response, next: NextFunction) => {
       if (req.body.data) {
@@ -20,6 +23,19 @@ router
       }
       return UserController.updateProfile(req, res, next);
     }
+  );
+
+router
+  .route('/agents')
+  .get(
+    auth(USER_ROLES.ADMIN, USER_ROLES.USER, USER_ROLES.AGENT),
+    UserController.getAgents
+  );
+router
+  .route('/get/users')
+  .get(
+    auth(USER_ROLES.ADMIN, USER_ROLES.USER, USER_ROLES.AGENT),
+    UserController.getUsers
   );
 
 router
