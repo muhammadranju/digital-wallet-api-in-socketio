@@ -18,23 +18,35 @@ import { ResetToken } from '../resetToken/resetToken.model';
 import { IUser } from '../user/user.interface';
 import { User } from '../user/user.model';
 import { Wallet } from '../wallets/wallets.model';
+import { checkEmailDomainIsTLD } from '../../../util/checkEmailDomainIsTLD';
 
 // create user
 
 const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
   //set role
   // payload.role = USER_ROLES.USER;
+  const isValidTLD = checkEmailDomainIsTLD(payload.email as string);
+
+  if (!isValidTLD) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      `Invalid email domain. Please use a valid top-level domain. For example, 'com', 'org', 'net', 'io', 'co', 'edu', 'gov', 'us'`
+    );
+  }
   const createUser = await User.create(payload);
+
   if (!createUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create user');
   }
+
+  // Check if the email domain is a top-level domain (TLD)
 
   const createWallet = await Wallet.create({
     balance: 50,
     user: createUser._id,
   });
 
-  //send email
+  // Send email
   const otp = generateOTP();
   const values = {
     name: createUser.name,
@@ -44,17 +56,19 @@ const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
   const createAccountTemplate = emailTemplate.createAccount(values);
   emailHelper.sendEmail(createAccountTemplate);
 
-  //save to DB
+  // Save to DB
   const authentication = {
     oneTimeCode: otp,
     expireAt: new Date(Date.now() + 3 * 60000),
   };
-  // update user
+
+  // Update user
   await User.findOneAndUpdate(
     { _id: createUser._id },
     { $set: { authentication } }
   );
-  // create wallet
+
+  // Create wallet
   await createWallet.save();
 
   return createUser;
@@ -65,16 +79,19 @@ const loginUserFromDB = async (payload: ILoginData) => {
   const { email, password } = payload;
   const isExistUser = await User.findOne({ email }).select('+password');
   if (!isExistUser) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      'Invalid credentials Email or Password!'
+    );
   }
 
   //check verified and status
-  // if (!isExistUser.verified) {
-  //   throw new ApiError(
-  //     StatusCodes.BAD_REQUEST,
-  //     'Please verify your account, then try to login again'
-  //   );
-  // }
+  if (!isExistUser.verified) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      'Please verify your account, then try to login again'
+    );
+  }
 
   //check user status
   if (isExistUser.status === 'delete') {
