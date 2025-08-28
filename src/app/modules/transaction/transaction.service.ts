@@ -260,8 +260,12 @@ const getAllUsersTransactionsToDB = async () => {
         'walletDetails.balance': 1, // Include wallet balance
         'userDetails.name': 1, // Include user name or any other user info
         'userDetails.email': 1, // Include user email or other relevant fields
-        createdAt: 1,
+        createdAt: 1, // Include the createdAt timestamp
       },
+    },
+    // Step 6: Sort by createdAt in descending order (latest first)
+    {
+      $sort: { createdAt: -1 }, // -1 for descending order
     },
   ]);
 
