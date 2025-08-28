@@ -13,7 +13,14 @@ app.use(Morgan.successHandler);
 app.use(Morgan.errorHandler);
 
 //body parser
-app.use(cors({ origin: '*' }));
+app.use(
+  cors({
+    origin: [
+      'https://digital-wallet-client-omega.vercel.app/',
+      'http://localhost:5173/',
+    ],
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

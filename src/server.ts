@@ -9,8 +9,6 @@ import config from './config';
 import { seedSuperAdmin } from './DB/seedAdmin';
 // import { errorLogger, logger } from './shared/logger';
 import { getServerIPs } from './util/getServerIPs';
-import dotenv from 'dotenv';
-dotenv.config();
 
 //uncaught exception
 // eslint-disable-next-line no-unused-vars
@@ -32,7 +30,7 @@ async function main() {
 
     server = app.listen(port, () => {
       console.log(
-        `♻️  Application listening on http://${getServerIPs()}:${config.port}`
+        `♻️  Application listening on http://localhost:${config.port}`
       );
       // logger.info(
       //   colors.yellow(

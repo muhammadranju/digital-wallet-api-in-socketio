@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
-
-dotenv.config();
+import path from 'path';
+dotenv.config({ path: path.join(process.cwd(), '.env'), override: false });
 
 export default {
   // ip_address: process.env.IP_ADDRESS,
