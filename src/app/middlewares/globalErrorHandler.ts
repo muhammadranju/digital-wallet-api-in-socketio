@@ -4,13 +4,13 @@ import config from '../../config';
 import ApiError from '../../errors/ApiError';
 import handleValidationError from '../../errors/handleValidationError';
 import handleZodError from '../../errors/handleZodError';
-import { errorLogger } from '../../shared/logger';
+// import { errorLogger } from '../../shared/logger';
 import { IErrorMessage } from '../../types/errors.types';
 
-const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
-  config.node_env === 'development'
-    ? console.log('🚨 globalErrorHandler ~~ ', error)
-    : errorLogger.error('🚨 globalErrorHandler ~~ ', error);
+const globalErrorHandler: ErrorRequestHandler = (error, req, res, _next) => {
+  // config.node_env === 'development'
+  //   ? console.log('🚨 globalErrorHandler ~~ ', error)
+  //   : errorLogger.error('🚨 globalErrorHandler ~~ ', error);
 
   let statusCode = 500;
   let message = 'Something went wrong';
@@ -67,6 +67,8 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     errorMessages,
     stack: config.node_env !== 'production' ? error?.stack : undefined,
   });
+
+  _next(error);
 };
 
 export default globalErrorHandler;
