@@ -1,6 +1,6 @@
 import { Response } from 'express';
 
-type IData<T> = {
+interface IData<T> {
   success: boolean;
   statusCode: number;
   message?: string;
@@ -11,7 +11,7 @@ type IData<T> = {
     total: number;
   };
   data?: T;
-};
+}
 
 const sendResponse = <T>(res: Response, data: IData<T>) => {
   const resData = {
