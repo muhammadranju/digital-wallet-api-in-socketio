@@ -1,7 +1,7 @@
 import { User } from '../app/modules/user/user.model';
 import config from '../config';
 import { USER_ROLES } from '../enums/user';
-// import { logger } from '../shared/logger';
+import { logger } from '../shared/logger';
 
 const payload = {
   name: 'Administrator',
@@ -18,7 +18,6 @@ export const seedSuperAdmin = async () => {
   });
   if (!isExistSuperAdmin) {
     await User.create(payload);
-    console.info('✨ Super Admin account has been successfully created!');
-    // logger.info('✨ Super Admin account has been successfully created!');
+    logger.info('✨ Super Admin account has been successfully created!');
   }
 };
