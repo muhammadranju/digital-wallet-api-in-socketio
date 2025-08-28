@@ -1,4 +1,4 @@
-export type IErrorMessage = {
+export interface IErrorMessage {
   path: string | number;
   message: string;
-};
+}

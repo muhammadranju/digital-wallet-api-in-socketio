@@ -1,10 +1,10 @@
-export type ICreateAccount = {
+export interface ICreateAccount {
   name: string;
   email: string;
   otp: number;
-};
+}
 
-export type IResetPassword = {
+export interface IResetPassword {
   email: string;
   otp: number;
-};
+}
