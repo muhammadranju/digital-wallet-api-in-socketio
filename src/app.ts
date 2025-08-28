@@ -16,8 +16,8 @@ app.use(Morgan.errorHandler);
 app.use(
   cors({
     origin: [
-      'https://digital-wallet-client-omega.vercel.app/',
-      'http://localhost:5173/',
+      'https://digital-wallet-client-omega.vercel.app',
+      'http://localhost:5173',
     ],
   })
 );
