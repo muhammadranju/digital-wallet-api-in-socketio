@@ -1,178 +1,172 @@
-# 💳 Digital Wallet API
 
-A secure, modular, and role-based backend API for a **digital wallet system** (similar to **Bkash** or **Nagad**) built with **Express.js** and **Mongoose**.
+# Digital Wallet API
 
-The system supports user registration, wallet management, and core financial operations like **add money, withdraw, send money**, and more.
-
----
-
-## 🎯 Features
-
-* 🔐 **Authentication** — JWT-based authentication system
-* 🎭 **Role-based Authorization** — Admin, User, Agent
-* 🏦 **Wallet Management** — Auto wallet creation, blocking/unblocking
-* 🧱 **Transactional Logic** — Cash-in, cash-out, send money, withdraw
-* 📦 **Modular Architecture** — Maintainable and scalable code structure
-* 🔁 **RESTful API Endpoints**
-* 🗄 **Mongoose ODM** for MongoDB
+A secure, modular, and role-based backend API for a digital wallet system (similar to Bkash or Nagad) built with Express.js and Mongoose. The system supports user registration, wallet management, and core financial operations like adding money, withdrawing funds, sending money, and more.
 
 ---
 
-## 📌 Functional Requirements
+## Table of Contents
 
-### ✅ User Roles
-
-* **User**
-
-  * Add money (top-up)
-  * Withdraw money
-  * Send money to other users
-  * View transaction history
-* **Agent**
-
-  * Add money to a user's wallet (cash-in)
-  * Withdraw money from a user's wallet (cash-out)
-  * View commission history *(optional)*
-* **Admin**
-
-  * View all users, agents, wallets, transactions
-  * Block/unblock wallets
-  * Approve/suspend agents
-  * Set system parameters *(optional)*
-
-### ✅ Common Requirements
-
-* JWT-based login for **Admin**, **User**, **Agent**
-* Secure password hashing (**bcrypt** or equivalent)
-* Auto wallet creation on registration (initial balance: ৳50)
-* Role-based route protection
-* All transactions stored & trackable
+* [Features](#features)
+* [Tech Stack](#tech-stack)
+* [Installation](#installation)
+* [API Documentation](#api-documentation)
+* [Authentication](#authentication)
+* [Configuration](#configuration)
+* [Testing](#testing)
+* [Deployment](#deployment)
+* [License](#license)
 
 ---
 
-## 🧠 System Design Considerations
+## Features
 
-### 🏦 Wallet Creation
-
-* Auto-create wallets during registration
-* Separate endpoint possible for admins
-* Wallets can be **blocked/unblocked** by admins
-
-### 🔁 Transaction Management
-
-* Track `type`, `amount`, `fee`, `commission`, `initiator`, `status`
-* Ensure atomic operations (balance updates + transaction records)
-* Status flow: `pending → completed → reversed`
-
-### 👥 Role Representation
-
-* Single **User** model with a `role` field
-* Agents: commission rate, approval status
-* Admins: system control permissions
-
-### 🫆 Validations
-
-* Prevent negative amounts
-* Handle insufficient balance
-* Blocked wallets cannot send/receive money
-* Minimum balance rules *(optional)*
-
-### 📜 Access & Visibility
-
-* Pagination & sorting for transaction history
-* Users see **only** their own wallets & history
-* Admins see **all** data
+* **User Management**: Registration, login, and role-based access control.
+* **Wallet Operations**: Add funds, withdraw, and transfer money.
+* **Real-Time Transactions**: Powered by Socket.IO for real-time updates.
+* **Modular Architecture**: Organized by domain (e.g., users, transactions).
+* **Secure Authentication**: JSON Web Tokens (JWT) for stateless authentication.
+* **Swagger UI**: Interactive API documentation for easy testing.
 
 ---
 
-## 🔐 API Endpoints (Sample)
+## Tech Stack
 
-| Method | Endpoint             | Description                | Roles       |
-| ------ | -------------------- | -------------------------- | ----------- |
-| POST   | `/auth/register`     | Register new user/agent    | Public      |
-| POST   | `/auth/login`        | Login                      | Public      |
-| POST   | `/wallets/deposit`   | Add money to wallet        | User, Agent |
-| POST   | `/wallets/withdraw`  | Withdraw money             | User, Agent |
-| POST   | `/wallets/send`      | Send money to another user | User        |
-| GET    | `/transactions/me`   | Get my transactions        | User, Agent |
-| GET    | `/admin/users`       | View all users             | Admin       |
-| PATCH  | `/wallets/block/:id` | Block a wallet             | Admin       |
+* **Backend**: Node.js with Express.js
+* **Database**: MongoDB with Mongoose
+* **Real-Time Communication**: Socket.IO
+* **Authentication**: JWT (JSON Web Tokens)
+* **API Documentation**: Swagger
+* **Environment Management**: dotenv
+* **Code Quality**: ESLint, Prettier
 
 ---
 
-## 📂 Project Structure
+## Installation
 
-```
-src/
-├── modules/
-│   ├── auth/
-│   ├── user/
-│   ├── wallet/
-│   └── transaction/
-├── middlewares/
-├── config/
-├── utils/
-├── app.ts
-```
+### Prerequisites
 
----
+* Node.js (v16 or higher)
+* MongoDB (local or remote instance)
+* npm or bun
 
-## ⚡ Getting Started
+### Steps
 
-### 1️⃣ Clone Repository
+1. Clone the repository:
 
-```bash
-git clone https://github.com/yourusername/digital-wallet-api.git
-cd digital-wallet-api
-```
+   ```bash
+   git clone https://github.com/muhammadranju/digital-wallet-api-in-socketio.git
+   cd digital-wallet-api-in-socketio
+   ```
 
-### 2️⃣ Install Dependencies
+2. Install dependencies:
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   # or
+   bun install
+   ```
 
-### 3️⃣ Configure Environment Variables
+3. Configure environment variables:
 
-Create a `.env` file:
+   Copy `.env.example` to `.env` and update the values:
 
-```env
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/digitalwallet
-JWT_SECRET=your_jwt_secret
-INITIAL_BALANCE=50
-```
+   ```bash
+   cp .env.example .env
+   ```
 
-### 4️⃣ Run in Development
+4. Start the application:
 
-```bash
-npm run dev
-```
+   ```bash
+   npm start
+   # or
+   bun start
+   ```
 
-### 5️⃣ Build & Run in Production
-
-```bash
-npm run build
-npm start
-```
+   The server will run on `http://localhost:3000`.
 
 ---
 
-## 🧪 Testing
+## API Documentation
 
-Run tests using:
+The API follows RESTful principles and includes the following endpoints:
+
+* **Authentication**
+
+  * `POST /auth/register`: Register a new user.
+  * `POST /auth/login`: Login and receive a JWT.
+  * `POST /auth/logout`: Logout and invalidate the JWT.
+
+* **Users**
+
+  * `GET /users`: List all users (admin only).
+  * `GET /users/:id`: Get user details.
+  * `PUT /users/:id`: Update user information.
+  * `DELETE /users/:id`: Delete a user.
+
+* **Wallets**
+
+  * `GET /wallet`: Get wallet balance.
+  * `POST /wallet/add`: Add funds to wallet.
+  * `POST /wallet/withdraw`: Withdraw funds from wallet.
+  * `POST /wallet/transfer`: Transfer funds to another wallet.
+
+* **Transactions**
+
+  * `GET /transactions`: List all transactions.
+  * `GET /transactions/:id`: Get transaction details.
+
+For detailed API specifications, refer to the Swagger UI at `http://localhost:3000/api-docs`.
+
+---
+
+## Authentication
+
+The API uses JWT for authentication:
+
+* **Register**: Obtain a token by registering a new user.
+* **Login**: Use the credentials to get a JWT.
+* **Access Protected Routes**: Include the token in the `Authorization` header as `Bearer <token>`.
+
+---
+
+## Configuration
+
+The application settings are managed via environment variables in the `.env` file:
+
+* `PORT`: Port number for the server.
+* `MONGO_URI`: MongoDB connection string.
+* `JWT_SECRET`: Secret key for signing JWTs.
+* `JWT_EXPIRATION`: Expiration time for JWTs.
+
+---
+
+## Testing
+
+To run tests:
 
 ```bash
 npm test
+# or
+bun test
 ```
+
+The project uses Jest for unit and integration testing.
 
 ---
 
-## 🛠 Tech Stack
+## Deployment
 
-* **Node.js**
-* **Express.js**
-* **MongoDB** + **Mongoose**
-* **JWT** Authentication
-* **Bcrypt** Password Hashing
+For deployment, consider using platforms like:
 
+* **Vercel**: For serverless deployment.
+* **Heroku**: For easy Node.js application hosting.
+* **Docker**: Containerize the application for consistent environments.
+
+Ensure to set the appropriate environment variables in the deployment platform.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

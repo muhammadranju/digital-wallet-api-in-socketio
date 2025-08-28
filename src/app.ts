@@ -17,6 +17,8 @@ app.use(
   cors({
     origin: [
       'https://digital-wallet-client-omega.vercel.app',
+      'https://paywallet-bd.vercel.app',
+      'https://paywallets.vercel.app',
       'http://localhost:5173',
     ],
   })
@@ -41,8 +43,6 @@ app.get('/', (req: Request, res: Response) => {
     `
   );
 });
-
-
 
 //global error handle
 app.use(globalErrorHandler);
